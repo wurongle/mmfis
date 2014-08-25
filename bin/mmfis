@@ -1,0 +1,1 @@
+"require('../mmfis.js').cli.run( process.argv );" 
