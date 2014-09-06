@@ -1,6 +1,6 @@
 {
   "name": "mmfis",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "mmfis",
   "main": "mmfis.js",
   "scripts": {
@@ -9,13 +9,31 @@
   "keywords": [
     "mmfis"
   ],
+  "bin": {
+    "mmfis": "bin/mmfis"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/wurongle/mmfis.git"
   },
-  "author": "wurongle@gmail.com",
+  "author": {
+    "name": "wurongle@gmail.com"
+  },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "fis": "~1.7.15"
-  }
+    "fis": "~1.7.15",
+    "mmfis-postpackager-webp": "~0.0.1",
+    "fis-parser-less": "~0.1.1"
+  },
+  "readme": "## mmfis base on fis",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/wurongle/mmfis/issues"
+  },
+  "_id": "mmfis@0.0.4",
+  "_from": "mmfis@0.0.4",
+  "dist": {
+    "shasum": "784bbcb6530226e95e2b8bb26a35e2dc5200286e"
+  },
+  "_resolved": "https://registry.npmjs.org/mmfis/-/mmfis-0.0.4.tgz"
 }
