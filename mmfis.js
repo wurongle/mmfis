@@ -12,6 +12,7 @@ fis.config.set('templates','/template');
 fis.config.set('modules.parser.less','less');
 fis.config.set('roadmap.ext.less','css');
 
+var IS_WIN = process.platform.indexOf('win') === 0;
 var includeFiles = {};
 var includeRegx = /<%#include\(([^#][a-zA-Z0-9-_#.\/:]+)\)%>/ig;
 var setVarIncludeRegx = /<<<subpath>>><<<([^#][a-zA-Z0-9-_#.\/:]+)>>><<<abspath>>><<<([^#][a-zA-Z0-9-_#.\/:]+)>>>/ig;
@@ -26,21 +27,24 @@ fis.config.set('modules.preprocessor.html',function (content, file, conf) {
 /*
  1. 相对路径用于计算ret.src.key
  2. 绝对路径用于计算运行时相对路径
+ 3. Fuck模版引擎是先计算include，GetVar方式不行
  */
 fis.config.set('modules.preprocessor.html',function (content, file, conf) {
-    //console.log(file.filename);
+    console.log("preprocessor file:",file.filename);
     content = content.replace(includeRegx,function (includeStr,url) {
-        //console.log(includeStr,url);
-        //console.log(file.subpath);
-        var _url = path.resolve(path.dirname(file.subpath),url).replace(/^\d:/,'').replace(/\\/g,'/');
-        //return '<%#include('+_url+')%>';
+        var _url = path.resolve(path.dirname(file.subpath),url);
+        if(IS_WIN){
+            _url = _url.replace(/\\/g, '/').replace(/^[a-zA-Z]:/,'');
+        }
+        console.log("subpath:",_url);
+        console.log("src:",url,'\n');
         return '<<<include>>><img subpath="'+_url+'" src="'+url+'"/>';
     });
     return content;
 });
 
 fis.config.set('modules.postprocessor.html',function (content, file, conf) {
-    //console.log(file.filename);
+    console.log("postprocessor file:",file.filename);
     /* encode */
     if(/^t\.gbk\.|gbk\./.test(file.filename)){
         //console.log('gbk',file);
@@ -51,22 +55,17 @@ fis.config.set('modules.postprocessor.html',function (content, file, conf) {
         file.release = file.release.replace(/(\/|__|\.)utf8\./i,'$1');
     }
     /* qqmailtemplate */
-    content = content.replace(/<<<include>>><img subpath="([^#][a-zA-Z0-9-_#.\/]+)" src="([^#][a-zA-Z0-9-_#.\/]+)"\/>/g,function (includeStr,subpath,abspath) {
-        //var _rel = path.relative(path.dirname(file.release),path.dirname(url)) + '/' +path.basename(url);
-        //url = url.replace(/(\/|__|\.)(gbk|utf8)\./i,'$1');
-        //console.log(file.filename);
-        //console.log(file.release,url,path.relative(path.dirname(file.release),url));
-        //var _url = path.resolve(path.dirname(file.release),url).replace(/^\d:/,'').replace(/\\/g,'/');
-        //return '<%#include('+_url+')%>';
+    content = content.replace(/<<<include>>><img subpath="([^#][a-zA-Z0-9-_#.\/:]+)" src="([^#][a-zA-Z0-9-_#.\/:]+)"\/>/g,function (includeStr,subpath,abspath) {
+        console.log("subpath:",subpath);
+        console.log("abspath:",abspath,'\n');
         return "<<<subpath>>><<<"+subpath+">>><<<abspath>>><<<"+abspath+">>>"
-        //return '<%#include('+fis.util(url)+')%>';
     });
     return content;
 });
 
 fis.config.set('modules.prepackager',function (ret, conf, settings, opt) {
     //console.log(ret);
-    //console.log("includeFiles",includeFiles);
+    console.log("includeFiles",'\n',includeFiles);
     fis.util.map(includeFiles,function (subpath,includes) {
         var file = ret.src[subpath];
         var getIncludes = function (include) {
@@ -87,10 +86,8 @@ fis.config.set('modules.prepackager',function (ret, conf, settings, opt) {
         var setIncludeVars = function (obj) {
             var setVarsArr = [];
             fis.util.map(obj,function (item,value) {
-                //console.log(item,value);
-                //console.log("\nSetVar",item,subpath,path.relative(path.dirname(subpath),path.dirname(item)));
                 var _rel = path.relative(path.dirname(file.release),path.dirname(value));
-                _rel += (_rel ? '/' :'./') + path.basename(value); 
+                _rel = _rel.replace(/\\/g, '/') + (_rel ? '/' :'./') + path.basename(value); 
                 setVarsArr.push("<%@SetVar("+item+','+_rel+")%>\n");
             });
             return setVarsArr.join('');
