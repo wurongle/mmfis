@@ -1,6 +1,6 @@
 {
   "name": "mmfis",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "mmfis",
   "main": "mmfis.js",
   "scripts": {
@@ -22,7 +22,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "fis": "~1.7.15",
-    "fis-parser-less": "~0.1.1"
+    "fis-parser-less": "~0.1.1",
+    "node-po-ext": "~0.1.3"
   },
   "readme": "## mmfis base on fis",
   "readmeFilename": "README.md",
