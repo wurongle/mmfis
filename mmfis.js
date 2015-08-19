@@ -15,13 +15,9 @@ fis.config.set('templates','/template');
 fis.config.set('modules.parser.less','less');
 fis.config.set('roadmap.ext.less','css');
 
-fis.config.set('modules.postprocessor.html',i18nHandler);
-fis.config.set('modules.postprocessor.js',i18nHandler);
-fis.config.set('modules.postprocessor.po',i18nHandler);
-
-function i18nHandler (ret, conf, settings, opt) {
+fis.config.set('modules.prepackager',function (ret, conf, settings, opt) {
     if(fis.config.get('i18n')){
         //国际化处理
         i18n.i18nHandler(ret);
     }
-}
+});
